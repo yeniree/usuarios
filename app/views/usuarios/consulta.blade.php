@@ -68,17 +68,17 @@
 				<tbody>
 					<?php $i = 1; ?>
 					@foreach ($usuarios as $usuario)
-					<tr class="@if ($usuario->cargouser[0]->pivot->status == 'Inactivo') danger @endif">
+					<tr class="@if ($usuario->status == 'Inactivo') danger @endif">
 						<td>{{ HTML::linkAction('UsuariosController@getEditar',$i++,array($usuario->id)) }}</td>
 						<td>{{ $usuario->cedula }}</td>
 						<td>{{ $usuario->nombre }}</td>
 						<td>{{ $usuario->apellido }}</td>
 						<td>{{ $usuario->correo }}</td>
 						<td>
-							{{$usuario->cargouser[0]->descripcion}}
+							{{ $usuario->cargos->descripcion}}
 						</td>
 						<td>
-							{{$usuario->cargouser[0]->pivot->status}}
+							{{$usuario->status}}
 						</td>
 						<td width="5%">
 							<a href='usuarios/crear/{{$usuario->id}}/editar' class='btn btn-warning' 

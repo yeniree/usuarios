@@ -3,7 +3,7 @@
 class UsuariosController extends BaseController {
 	public function index(){
 		//preparo list para cargos
-		$cargos = Cargo::all()->lists('descripcion', 'id');
+		$cargos = Cargos::all()->lists('descripcion', 'id');
 		$combobox = array("" => "Seleccione Cargo") + $cargos;
 
 		//armo condiciones para la consulta
@@ -11,22 +11,17 @@ class UsuariosController extends BaseController {
 		$opc = (!empty(Input::get('cedula'))? '=' : 'like');
 		$nombre = (!empty(Input::get('nombre'))? '%'.Input::get('nombre').'%' : '%');
 		$apellido = (!empty(Input::get('apellido'))? '%'.Input::get('apellido').'%' : '%');		
+		$cargo_id = (!empty(Input::get('cargo_id'))? Input::get('cargo_id') : '%');
+		$opcar = (!empty(Input::get('cargo_id'))? '=' : 'like');
+		$status = (!empty(Input::get('status'))? Input::get('status') : '%');
+		$ops = (!empty(Input::get('status'))? '=' : 'like');
 
 		//me traigo objeto usuario
-		$usuarios = Usuario::with('cargouser')
-		->where('cedula', $opc, $cedula)
+		$usuarios = Usuarios::where('cedula', $opc, $cedula)
 		->where('nombre', 'like', $nombre)
 		->where('apellido', 'like', $apellido)
-		->whereHas('cargouser', function($q) {
-			//armo condicion para pivot
-			$cargo_id = (!empty(Input::get('cargo_id'))? Input::get('cargo_id') : '%');
-			$opcar = (!empty(Input::get('cargo_id'))? '=' : 'like');
-			$status = (!empty(Input::get('status'))? Input::get('status') : '%');
-			$ops = (!empty(Input::get('status'))? '=' : 'like');
-
-			$q->where('cargo_id', $opcar, $cargo_id); 
-			$q->where('status', $ops, $status); 
-		})
+		->where('cargos_id', $opcar, $cargo_id)
+		->where('status', $ops, $status)
 		->get();
 
 		return View::make('usuarios.consulta',
@@ -35,27 +30,23 @@ class UsuariosController extends BaseController {
 	}
 
 	public function getCrear(){
-		$cargos = Cargo::all()->lists('descripcion', 'id');
+		$cargos = Cargos::all()->lists('descripcion', 'id');
 		$combobox = array("" => "Seleccione ... ") + $cargos;
 		return View::make('usuarios.crear',array('cargos' => $combobox));		
 	}
 
 	public function postCrear(){
-		$validator = Validator::make(Input::all(),Usuario::rules());
+		$validator = Validator::make(Input::all(),Usuarios::rules());
 
 		if ($validator->passes()) {
-			$usuario = new Usuario();
+			$usuario = new Usuarios();
 			$usuario->cedula = Input::get('cedula');
 			$usuario->nombre = Input::get('nombre');
 			$usuario->apellido = Input::get('apellido');
 			$usuario->correo = Input::get('correo');
+			$usuario->status = Input::get('status');
+			$usuario->cargos_id = Input::get('cargo_id');
 			$usuario->save();
-
-			$cargousuario = new CargosUsuarios();
-			$cargousuario->cargo_id = Input::get('cargo_id');
-			$cargousuario->status = Input::get('status');
-			$cargousuario->usuarios()->associate($usuario);			
-			$cargousuario->save();
 
 			return Redirect::to('usuarios/crear')
 			->with('exitoso', 'Se ha creado el usuario exitosamente.');
@@ -66,8 +57,8 @@ class UsuariosController extends BaseController {
 	}
 
 	public function getEditar($id){
-		$usuarios = Usuario::find($id);
-		$cargos = Cargo::all()->lists('descripcion', 'id');
+		$usuarios = Usuarios::find($id);
+		$cargos = Cargos::all()->lists('descripcion', 'id');
 		$combobox = array("" => "Seleccione ... ") + $cargos;
 
 		return View::make('usuarios/editar', array('usuarios' => $usuarios,
@@ -75,18 +66,16 @@ class UsuariosController extends BaseController {
 	}
 
 	public function postEditar($id){
-		$validator = Validator::make(Input::all(),Usuario::rules($id));
+		$validator = Validator::make(Input::all(),Usuarios::rules($id));
 
 		if ($validator->passes()) {
-			$usuarios = Usuario::find($id);
+			$usuarios = Usuarios::find($id);
 			$usuarios->cedula = Input::get('cedula');
 			$usuarios->nombre = Input::get('nombre');
 			$usuarios->apellido = Input::get('apellido');
 			$usuarios->correo = Input::get('correo');
-
-			$cargousuario = CargosUsuarios::where('usuario_id',$id)
-			->update(array('cargo_id' =>Input::get('cargo_id'),'status' => Input::get('status')));
-
+			$usuarios->cargos_id = Input::get('cargo_id');
+			$usuarios->status = Input::get('status');
 			$usuarios->save();
 
 			return Redirect::to('usuarios/crear/'.$id.'/editar')
@@ -97,7 +86,7 @@ class UsuariosController extends BaseController {
 	}
 
 	public function postEliminar($id){
-		$usuarios = Usuario::find($id);
+		$usuarios = Usuarios::find($id);
 
 		if ($usuarios){
 			$usuarios->delete();

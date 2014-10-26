@@ -61,11 +61,9 @@
 					</div>
 					<div class='form-group @if ($errors->has('cargo')) has-error @endif'>
 						<!-- `Cargo` Field -->
-						@foreach ($usuarios->cargouser as $user)
-						@endforeach
 						{{ Form::label('cargo', 'Cargo') }}
 						{{ Form::select('cargo_id', $cargos,
-							$user->pivot->cargo_id,
+							$usuarios->cargos_id,
 						 ['class'=>'form-control']) }}
 						@if ($errors->has('cargo'))
 						<p class="help-block">{{ $errors->first('cargo') }}</p>
@@ -75,7 +73,7 @@
 						<!-- `Staus` Field -->
 						{{ Form::label('status', 'Status') }}
 						{{ Form::select('status', array('Activo'=>'Activo','Inactivo'=>'Inactivo'),
-						$user->pivot->status, ['class'=>'form-control']) }}
+						$usuarios->status, ['class'=>'form-control']) }}
 						@if ($errors->has('status'))
 						<p class="help-block">{{ $errors->first('status') }}</p>
 						@endif

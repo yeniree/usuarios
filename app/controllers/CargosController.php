@@ -2,7 +2,7 @@
 
 class CargosController extends BaseController {
 	public function consultar(){
-		$cargos = Cargo::all();
+		$cargos = Cargos::all();
 		return View::make('cargos.consulta', array('cargos' => $cargos));
 	}
 
@@ -11,10 +11,10 @@ class CargosController extends BaseController {
 	}
 
 	public function postCrear(){
-		$validator = Validator::make(Input::all(),Cargo::$rules);
+		$validator = Validator::make(Input::all(),Cargos::$rules);
 
 		if ($validator->passes()) {
-			$cargos = new Cargo();
+			$cargos = new Cargos();
 			$cargos->descripcion = Input::get('descripcion');
 			$cargos->save();
 
@@ -26,15 +26,15 @@ class CargosController extends BaseController {
 	}
 
 	public function getEditar($id){
-		$cargos = Cargo::find($id);
+		$cargos = Cargos::find($id);
 		return View::make('cargos/editar', array('cargos' => $cargos));
 	}
 
 	public function postEditar($id){
-		$validator = Validator::make(Input::all(),Cargo::$rules);
+		$validator = Validator::make(Input::all(),Cargos::$rules);
 
 		if ($validator->passes()) {
-			$cargos = Cargo::find($id);
+			$cargos = Cargos::find($id);
 			$cargos->descripcion = Input::get('descripcion');
 			$cargos->save();
 
@@ -47,13 +47,13 @@ class CargosController extends BaseController {
 	}
 
 	public function getEliminar($id){
-		$cargos = Cargo::find($id);
+		$cargos = Cargos::find($id);
 		return View::make('cargos/consulta', array('cargo' => $cargos))
 		->with('activar', 1);
 	}
 
 	public function postEliminar($id){
-		$cargos = Cargo::find($id);
+		$cargos = Cargos::find($id);
 
 		if ($cargos){
 			$cargos->delete();

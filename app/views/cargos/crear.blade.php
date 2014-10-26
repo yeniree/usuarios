@@ -24,7 +24,8 @@
 	
 	<div class='row'>
 		<div class="col-md-12 text-right">
-			{{ HTML::linkAction('UsuariosController@index', 'Volver a menú principal', array(), array('class' => 'btn btn-primary')) }}
+			{{ HTML::linkAction('UsuariosController@index', 'Volver a menú principal', array(), array('class' => 'btn btn-default')) }}
+			{{ HTML::linkAction('CargosController@consultar', 'Consultar Cargos', array(), array('class' => 'btn btn-primary')) }}
 		</div>
 		<div class='col-md-12'>
 			<br/>
